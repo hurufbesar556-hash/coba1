@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Shark Uploader",
+  "version": "1.4",
+  "description": "NXT_Shark537 TikTok upload quality patch + Repost Remover.",
+  "permissions": [
+    "downloads",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.tiktok.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Shark Uploader",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.tiktok.com/tiktokstudio/upload*",
+        "*://www.tiktok.com/upload*",
+        "*://www.tiktok.com/creator-center*",
+        "*://*.tiktok.com/upload*",
+        "*://*.tiktok.com/creator-center*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://www.tiktok.com/@*"
+      ],
+      "js": ["content_repost.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js", "repost_injected.js"],
+      "matches": ["*://*.tiktok.com/*"]
+    }
+  ],
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
