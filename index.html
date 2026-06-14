@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --cu-bg: #050506;
+      --cu-bg-2: #060a12;
+      --cu-bg-3: #07101f;
+      --cu-surface: rgba(12, 16, 24, 0.78);
+      --cu-surface-strong: rgba(16, 24, 38, 0.9);
+      --cu-border: rgba(255, 255, 255, 0.08);
+      --cu-border-hot: rgba(45, 140, 255, 0.42);
+      --cu-text: #f7f3f4;
+      --cu-muted: #9a8f94;
+      --cu-dim: #6c5d63;
+      --cu-blue: #2d8cff;
+      --cu-blue-2: #1473ff;
+      --cu-blue-dark: #063a7a;
+      --cu-blue-soft: rgba(45, 140, 255, 0.16);
+      --cu-deep-blue: #0f55b8;
+      --cu-black: #030304;
+      --cu-green: #35e783;
+      --cu-green-soft: rgba(53, 231, 131, 0.16);
+      --cu-cyan-detail: #3ddcff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      color: var(--cu-text);
+      font-family: Inter, Sora, "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(45, 140, 255, 0.22), transparent 34%),
+        radial-gradient(circle at 90% 100%, rgba(15, 85, 184, 0.20), transparent 36%),
+        radial-gradient(circle at 50% 45%, rgba(6, 58, 122, 0.14), transparent 42%),
+        linear-gradient(145deg, #030304 0%, #060a12 48%, #07101f 100%);
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: radial-gradient(circle at 50% 45%, black, transparent 74%);
+    }
+
+    .cu-shell {
+      position: relative;
+      display: grid;
+      gap: 12px;
+      animation: cuEnter 220ms ease-out both;
+    }
+
+    .cu-header,
+    .cu-card {
+      background: var(--cu-surface);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--cu-border);
+      border-top: 1px solid rgba(45,140,255,0.25);
+      border-radius: 20px;
+      box-shadow:
+        0 18px 45px rgba(0,0,0,0.65),
+        0 0 30px rgba(45,140,255,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    .cu-header {
+      padding: 13px;
+    }
+
+    .cu-brand-row {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .cu-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255,255,255,0.22), transparent 26%),
+        linear-gradient(135deg, rgba(45,140,255,0.95), rgba(6,58,122,0.92));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 0 22px rgba(45,140,255,0.34);
+    }
+
+    .cu-mark::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 2px solid rgba(255,255,255,0.92);
+      transform: rotate(45deg);
+      box-shadow: inset 0 0 12px rgba(255,255,255,0.18);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .cu-subtitle {
+      margin: 6px 0 0;
+      color: var(--cu-muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .cu-method {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 12px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #dcecff;
+      background: rgba(45,140,255,0.10);
+      border: 1px solid rgba(45,140,255,0.22);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .cu-lang {
+      display: inline-flex;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(3,3,4,0.52);
+      border: 1px solid var(--cu-border);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .lang-btn {
+      width: auto;
+      min-width: 30px;
+      padding: 5px 7px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--cu-muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      transition: 180ms ease;
+    }
+
+    .lang-btn:hover,
+    .lang-btn.is-active {
+      color: var(--cu-text);
+      background: rgba(45,140,255,0.18);
+      box-shadow: 0 0 16px rgba(45,140,255,0.16);
+    }
+
+    .cu-card {
+      display: grid;
+      gap: 10px;
+      padding: 13px;
+    }
+
+    .cu-field-label {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--cu-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      min-height: 46px;
+      color: var(--cu-muted);
+      background: rgba(3,3,4,0.45);
+      border: 1px solid var(--cu-border);
+      border-top-color: rgba(45,140,255,0.18);
+      border-radius: 15px;
+      padding: 8px;
+      font-size: 11px;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    input[type="file"]:hover,
+    input[type="file"]:focus {
+      border-color: var(--cu-border-hot);
+      background: rgba(8,14,28,0.64);
+      box-shadow: 0 0 20px rgba(45,140,255,0.10);
+    }
+
+    input[type="file"]::file-selector-button {
+      margin-right: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(45,140,255,0.34);
+      border-radius: 11px;
+      color: var(--cu-text);
+      background: linear-gradient(135deg, rgba(45,140,255,0.26), rgba(6,58,122,0.32));
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: 180ms ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      border-color: rgba(45,140,255,0.58);
+      box-shadow: 0 0 16px rgba(45,140,255,0.16);
+    }
+
+    button {
+      width: 100%;
+      min-height: 42px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, opacity 180ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .patch-btn {
+      color: #f8fbff;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(135deg, #2d8cff, #0f55b8);
+      box-shadow: 0 12px 28px rgba(15,85,184,0.30), 0 0 22px rgba(45,140,255,0.16);
+    }
+
+    .patch-btn:hover {
+      box-shadow: 0 14px 34px rgba(15,85,184,0.42), 0 0 28px rgba(45,140,255,0.22);
+    }
+
+    .patch-btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      filter: grayscale(0.35);
+    }
+
+    .secondary {
+      color: var(--cu-text);
+      background: linear-gradient(135deg, rgba(18,12,14,0.88), rgba(9,35,74,0.68));
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .secondary:hover {
+      border-color: var(--cu-border-hot);
+      box-shadow: 0 0 22px rgba(45,140,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    #status {
+      position: relative;
+      min-height: 34px;
+      margin: 0;
+      padding: 9px 10px 9px 28px;
+      color: var(--cu-muted);
+      background: rgba(3,3,4,0.48);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 13px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    #status::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 13px;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--cu-dim);
+      box-shadow: 0 0 12px rgba(255,255,255,0.06);
+    }
+
+    #status[data-state="processing"] {
+      color: #dcecff;
+      border-color: rgba(45,140,255,0.20);
+    }
+
+    #status[data-state="processing"]::before {
+      background: var(--cu-blue);
+      box-shadow: 0 0 14px rgba(45,140,255,0.42);
+    }
+
+    #status[data-state="success"] {
+      color: #d9ffe9;
+      border-color: rgba(53,231,131,0.22);
+      background: var(--cu-green-soft);
+    }
+
+    #status[data-state="success"]::before {
+      background: var(--cu-green);
+      box-shadow: 0 0 14px rgba(53,231,131,0.46);
+    }
+
+    #status[data-state="error"] {
+      color: #d4e7ff;
+      border-color: rgba(45,140,255,0.38);
+      background: rgba(45,140,255,0.10);
+    }
+
+    #status[data-state="error"]::before {
+      background: var(--cu-blue-2);
+      box-shadow: 0 0 16px rgba(20,115,255,0.48);
+    }
+
+    .cu-warning-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: rgba(3, 3, 4, 0.72);
+      backdrop-filter: blur(10px);
+      animation: cuEnter 180ms ease-out both;
+    }
+
+    .cu-warning-overlay[hidden] {
+      display: none;
+    }
+
+    .cu-warning-modal {
+      width: 100%;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-top: 1px solid rgba(45,140,255,0.42);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(45,140,255,0.28), transparent 38%),
+        linear-gradient(145deg, rgba(18,12,14,0.96), rgba(10,24,48,0.94));
+      box-shadow:
+        0 22px 58px rgba(0,0,0,0.78),
+        0 0 38px rgba(45,140,255,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .cu-warning-kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #dcecff;
+      background: rgba(45,140,255,0.13);
+      border: 1px solid rgba(45,140,255,0.28);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .cu-warning-title {
+      margin: 0;
+      color: #f8fbff;
+      font-size: 20px;
+      line-height: 1.08;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .cu-warning-body {
+      margin: 12px 0 16px;
+      color: #dce8f0;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .cu-warning-close {
+      color: #f8fbff;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(135deg, #2d8cff, #0f55b8);
+      box-shadow: 0 12px 28px rgba(15,85,184,0.30), 0 0 22px rgba(45,140,255,0.16);
+    }
+
+    @keyframes cuEnter {
+      from { opacity: 0; transform: translateY(4px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <main class="cu-shell">
+    <header class="cu-header">
+      <div class="cu-brand-row">
+        <div class="cu-mark" aria-hidden="true"></div>
+        <div>
+          <h1 data-i18n="title">Shark Uploader</h1>
+          <p class="cu-subtitle" data-i18n="subtitle">Local MP4 patch + upload metadata cleanup</p>
+        </div>
+        <div class="cu-lang" aria-label="Language">
+          <button class="lang-btn is-active" type="button" data-lang="en">EN</button>
+          <button class="lang-btn" type="button" data-lang="pt">PT</button>
+        </div>
+      </div>
+      <div class="cu-method" data-i18n="method">NXT_Shark537 method</div>
+    </header>
+
+    <section class="cu-card" aria-label="Shark Uploader controls">
+      <label class="cu-field-label" for="fileInput" data-i18n="selectVideo">Select video</label>
+      <input type="file" id="fileInput" accept="video/*">
+      <button class="secondary" id="openTabBtn" type="button" data-i18n="openTab">Open in new tab</button>
+      <button class="patch-btn" id="patchBtn" disabled type="button" data-i18n="patchDownload">Patch &amp; Download</button>
+      <div id="status" data-state="idle" data-i18n="ready">Ready</div>
+    </section>
+  </main>
+
+  <div class="cu-warning-overlay" id="sizeWarning" role="dialog" aria-modal="true" aria-labelledby="sizeWarningTitle" hidden>
+    <div class="cu-warning-modal">
+      <span class="cu-warning-kicker" data-i18n="sizeWarningKicker">File size warning</span>
+      <h2 class="cu-warning-title" id="sizeWarningTitle" data-i18n="sizeWarningTitle">Video over 90 MB</h2>
+      <p class="cu-warning-body" data-i18n="sizeWarningBody">
+        Your video is bigger than 90 MB. It may flop because of that. It is HIGHLY recommended to compress it more.
+      </p>
+      <button class="cu-warning-close" id="sizeWarningClose" type="button" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
